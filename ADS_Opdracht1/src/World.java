@@ -8,7 +8,7 @@ public class World
 	private int worldWidth, worldHeight;
 	private int maxObjects;
 	
-	private boolean debug = true;
+	private boolean debug = false; // Set to true to display runtimes.
 	
 	public void generateObjects(int maxX, int maxY, int maxObjects)
 	{
