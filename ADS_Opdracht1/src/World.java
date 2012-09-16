@@ -8,7 +8,7 @@ public class World
 	private int worldWidth, worldHeight;
 	private int maxObjects;
 	
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	public void generateObjects(int maxX, int maxY, int maxObjects)
 	{
@@ -72,6 +72,11 @@ public class World
 		// 1b.e
 		if(this.debug)
 			this.getFirstFilledTilePerRow();
+		
+		// 1b.f
+		int longestSequence = this.findLongestSequence();
+		if(this.debug == false)
+			System.out.println("[1b.f] Longest connecting sequence: "+longestSequence);
 	}
 	
 	// Opdracht 1b.a
@@ -197,6 +202,39 @@ public class World
 			}
 		}
 		return tile;
+	}
+	
+	// Opdracht 1b.f (cookies!)
+	public int findLongestSequence()
+	{
+		long start = System.currentTimeMillis();
+		
+		int longestSequence = 0;
+		
+		for(int i = 0; i < this.getWorldWidth(); i++)
+		{
+			int rowSequence = 0;
+			for(int j = 0; j < this.getWorldHeight(); j++)
+			{
+				if(this.grid[i][j] > 0)
+				{
+					rowSequence++;
+				}
+				else
+				{
+					if(rowSequence > longestSequence)
+						longestSequence = rowSequence;
+					
+					rowSequence = 0;
+				}
+			}
+		}
+		
+		long end = System.currentTimeMillis();
+		if(this.debug)
+			System.out.println("Runtime [1b.f]: " + (end - start) + " ms");
+		
+		return longestSequence;
 	}
 	
 	private boolean hasObjectOnTile(int x, int y)
