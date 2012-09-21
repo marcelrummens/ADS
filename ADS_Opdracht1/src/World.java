@@ -1,9 +1,7 @@
-import java.util.ArrayList;
 
 
 public class World
 {
-	private ArrayList<WorldObject> objectArray = new ArrayList<WorldObject>();
 	private int grid[][];
 	private int worldWidth, worldHeight;
 	private int maxObjects;
@@ -25,11 +23,13 @@ public class World
 		{
 			int x = (int) (Math.random() * maxX);
 			int y = (int) (Math.random() * maxY);
-			this.addObject(new WorldObject(x,y));
+			this.grid[x][y]++;
 		}
 		
 		long end = System.currentTimeMillis();
-		System.out.println("Runtime generating: " + (end - start) + " ms");
+		
+		if(debug)
+			System.out.println("Runtime generating: " + (end - start) + " ms");
 	}
 	
 	public void printWorld()
@@ -43,7 +43,7 @@ public class World
 				System.out.print("|");
 				for(int j = 0; j < this.getWorldHeight(); j++)
 				{
-					if(this.hasObjectOnTile(i,j))
+					if(this.grid[i][j] > 0)
 						System.out.print(this.grid[i][j]+"|");
 					else
 						System.out.print(" |");
@@ -79,6 +79,19 @@ public class World
 			System.out.println("[1b.f] Longest connecting sequence: "+longestSequence);
 	}
 	
+	public boolean hasMultiTile()
+	{
+		for(int i = 0; i < this.getWorldWidth(); i++)
+		{
+			for(int j = 0; j < this.getWorldHeight(); j++)
+			{
+				if(this.grid[i][j] > 1)
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	// Opdracht 1b.a
 	public int getNumberOfObjectsOnBottomHalf()
 	{
@@ -105,11 +118,8 @@ public class World
 		long start = System.currentTimeMillis();
 		
 		int[] rows = new int[this.getWorldHeight()];
-		
 		for(int i = 0; i < this.getWorldHeight(); i++)
-		{
 			rows[i] = this.getNumberOfObjectsForRow(i);
-		}
 		
 		long end = System.currentTimeMillis();
 		if(this.debug)
@@ -122,8 +132,7 @@ public class World
 		int number = 0;
 		for(int j = 0; j < this.getWorldHeight(); j++)
 		{
-			if(this.grid[x][j] > 0)
-				number += this.grid[x][j];
+			number += this.grid[x][j];
 		}
 
 		return number;
@@ -156,13 +165,13 @@ public class World
 	{
 		long start = System.currentTimeMillis();
 		
-		int numberOfFilledTiles = 0;
+		int numberOfEmptyTiles = 0;
 		for(int i = 0; i < this.getWorldWidth(); i++)
 		{
 			for(int j = 0; j < this.getWorldHeight(); j++)
 			{
-				if(this.grid[i][j] > 0)
-					numberOfFilledTiles++;
+				if(this.grid[i][j] == 0)
+					numberOfEmptyTiles++;
 			}
 		}
 		
@@ -170,7 +179,7 @@ public class World
 		if(this.debug)
 			System.out.println("Runtime [1b.d]: " + (end - start) + " ms");
 		
-		return (this.getWorldWidth() * this.getWorldHeight()) - numberOfFilledTiles;
+		return numberOfEmptyTiles;
 	}
 
 	// Opdracht 1b.e
@@ -195,7 +204,7 @@ public class World
 		int tile = 0;
 		for(int j = 0; j < this.getWorldWidth(); j++)
 		{
-			if(this.hasObjectOnTile(x,j))
+			if(this.grid[x][j] > 0)
 			{
 				tile = (j+1);
 				break;
@@ -235,17 +244,6 @@ public class World
 			System.out.println("Runtime [1b.f]: " + (end - start) + " ms");
 		
 		return longestSequence;
-	}
-	
-	private boolean hasObjectOnTile(int x, int y)
-	{
-		return (this.grid[x][y] > 0);
-	}
-	
-	private void addObject(WorldObject object)
-	{
-		this.grid[object.getX()][object.getY()]++;
-		this.objectArray.add(object);
 	}
 
 	public int getWorldWidth() {
